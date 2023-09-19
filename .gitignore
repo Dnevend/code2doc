@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+/npm-debug.log*
+/yarn-error.log
+/package-lock.json
+/.eslintcache
+
+# misc
+.DS_Store
+.npmrc
+.vscode
+
+# generate
+CodeDocument.docx
