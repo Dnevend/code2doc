@@ -33,6 +33,7 @@ const generateParagraph = (title, content) => {
 const generateDocSection = async (directoryPath) => {
     try {
         const documentParagraph = []
+
         const files = await fs.readdir(directoryPath);
 
         for (const file of files) {
@@ -42,15 +43,16 @@ const generateDocSection = async (directoryPath) => {
             if (fileStat.isFile()) {
                 if (CONFIG.extension.some(it => file.endsWith(it))) {
                     const fileContent = await fs.readFile(filePath, 'utf8');
-
-                    // 根据文件内容生成文档段落
+                    // generate paragraph
                     const paragraph = generateParagraph(filePath, fileContent)
                     documentParagraph.push(paragraph)
                 }
             } else {
-                // 递归读取目录下的文件
-                const childParagraph = await generateDocSection(filePath)
-                documentParagraph.push(childParagraph)
+                if (CONFIG.depth) {
+                    // deep generate from child folder
+                    const childParagraph = await generateDocSection(filePath)
+                    documentParagraph.push(childParagraph)
+                }
             }
         }
 
@@ -64,7 +66,6 @@ const generateDocSection = async (directoryPath) => {
 /** write document section to the docx file */
 const writeToDoc = async (sectionChildren) => {
     try {
-
         const children = Array.isArray(sectionChildren) ? sectionChildren : [sectionChildren]
 
         const document = new Document({
@@ -79,7 +80,7 @@ const writeToDoc = async (sectionChildren) => {
 
         console.log(`🎉 Write to doc succeed, Total ${children.length} file.`)
     } catch (err) {
-        console.log('🐛 Write To Doc Error : ', err)
+        console.log('🐛 Write to doc error : ', err)
     }
 }
 
